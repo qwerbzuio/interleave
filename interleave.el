@@ -322,11 +322,13 @@ It (possibly) narrows the subtree when found."
           ;; widen the buffer again for the case it is narrowed from
           ;; multi-pdf notes search. Kinda ugly I know. Maybe a macro helps?
           (widen)
-          (org-back-to-heading t)
+          (setq point (org-back-to-heading t))
           (interleave--narrow-to-subtree)
           (org-show-subtree)
           (org-cycle-hide-drawers t)
-          (setq point (point))))
+          (with-selected-window window
+            (goto-char point)
+            (recenter 0))))
       ;; When narrowing is disabled, and the notes/org buffer is
       ;; visible recenter to the current headline. So even if not
       ;; narrowed the notes buffer scrolls allong with the PDF.
