@@ -511,8 +511,8 @@ This shows the next notes and synchronizes the PDF to the right page number."
   (interleave--narrow-to-subtree)
   (org-show-subtree)
   (org-cycle-hide-drawers t)
-  (let ((pdf-page (string-to-number
-                   (org-entry-get (point) interleave--page-note-prop))))
+  (when-let* ((interleave-page-number (org-entry-get (point) interleave--page-note-prop))
+              (pdf-page (string-to-number interleave-page-number)))
     (when (and (integerp pdf-page)
                (> pdf-page 0)) ; The page number needs to be a positive integer
       (interleave--switch-to-pdf-buffer)
