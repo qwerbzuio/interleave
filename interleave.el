@@ -310,32 +310,33 @@ It (possibly) narrows the subtree when found."
   (with-current-buffer interleave-org-buffer
     (let (point
           (window (get-buffer-window (current-buffer) 'visible)))
-      (save-excursion
-        (widen)
-        (interleave--goto-search-position)
-        (when interleave-multi-pdf-notes-file
-          ;; only search the current subtree for notes. See. Issue #16
-          (interleave--narrow-to-subtree t))
-        (when (re-search-forward (format "^\[ \t\r\]*\:interleave_page_note\: %s$"
-                                         page)
-                                 nil t)
-          ;; widen the buffer again for the case it is narrowed from
-          ;; multi-pdf notes search. Kinda ugly I know. Maybe a macro helps?
+      (when (window-live-p window)
+        (save-excursion
           (widen)
-          (setq point (org-back-to-heading t))
-          (interleave--narrow-to-subtree)
-          (org-show-subtree)
-          (org-cycle-hide-drawers t)
+          (interleave--goto-search-position)
+          (when interleave-multi-pdf-notes-file
+            ;; only search the current subtree for notes. See. Issue #16
+            (interleave--narrow-to-subtree t))
+          (when (re-search-forward (format "^\[ \t\r\]*\:interleave_page_note\: %s$"
+                                           page)
+                                   nil t)
+            ;; widen the buffer again for the case it is narrowed from
+            ;; multi-pdf notes search. Kinda ugly I know. Maybe a macro helps?
+            (widen)
+            (setq point (org-back-to-heading t))
+            (interleave--narrow-to-subtree)
+            (org-show-subtree)
+            (org-cycle-hide-drawers t)
+            (with-selected-window window
+              (goto-char point)
+              (recenter 0))))
+        ;; When narrowing is disabled, and the notes/org buffer is
+        ;; visible recenter to the current headline. So even if not
+        ;; narrowed the notes buffer scrolls allong with the PDF.
+        (when (and interleave-disable-narrowing point window)
           (with-selected-window window
             (goto-char point)
-            (recenter 0))))
-      ;; When narrowing is disabled, and the notes/org buffer is
-      ;; visible recenter to the current headline. So even if not
-      ;; narrowed the notes buffer scrolls allong with the PDF.
-      (when (and interleave-disable-narrowing point window)
-        (with-selected-window window
-          (goto-char point)
-          (recenter)))
+            (recenter))))
       point)))
 
 (defun interleave-go-to-next-page ()
