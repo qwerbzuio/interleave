@@ -339,16 +339,18 @@ It (possibly) narrows the subtree when found."
             (recenter))))
       point)))
 
-(defun interleave-go-to-next-page ()
+(defun interleave-go-to-next-page (arg)
   "Go to the next page in PDF.  Look up for available notes."
-  (interactive)
-  (funcall interleave-pdf-next-page-fn)
+  (interactive "p")
+  (dotimes (or arg 1)
+    (funcall interleave-pdf-next-page-fn))
   (interleave--go-to-page-note (funcall interleave-pdf-current-page-fn)))
 
-(defun interleave-go-to-previous-page ()
+(defun interleave-go-to-previous-page (arg)
   "Go to the previous page in PDF.  Look up for available notes."
-  (interactive)
-  (funcall interleave-pdf-previous-page-fn)
+  (interactive "p")
+  (dotimes (or arg 1)
+    (funcall interleave-pdf-previous-page-fn))
   (interleave--go-to-page-note (funcall interleave-pdf-current-page-fn)))
 
 (defun interleave-scroll-up ()
