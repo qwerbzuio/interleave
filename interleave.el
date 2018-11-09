@@ -478,20 +478,21 @@ buffer."
 
 This show the previous notes and synchronizes the PDF to the right page number."
   (interactive)
-  (interleave--switch-to-org-buffer)
-  (widen)
-  (interleave--goto-parent-headline interleave--page-note-prop)
-  (org-backward-heading-same-level 1)
-  (interleave--narrow-to-subtree)
-  (org-show-subtree)
-  (org-cycle-hide-drawers t)
-  (let ((pdf-page (string-to-number
-                   (org-entry-get-with-inheritance interleave--page-note-prop))))
-    (when (and (integerp pdf-page)
-               (> pdf-page 0)) ; The page number needs to be a positive integer
+  (save-selected-window
+    (interleave--switch-to-org-buffer)
+    (widen)
+    (interleave--goto-parent-headline interleave--page-note-prop)
+    (org-backward-heading-same-level 1)
+    (interleave--narrow-to-subtree)
+    (org-show-subtree)
+    (org-cycle-hide-drawers t)
+    (let ((pdf-page (string-to-number
+                     (org-entry-get-with-inheritance interleave--page-note-prop))))
+      (when (and (integerp pdf-page)
+                 (> pdf-page 0)) ; The page number needs to be a positive integer
 
-      (interleave--switch-to-pdf-buffer)
-      (funcall interleave-pdf-goto-page-fn pdf-page))))
+       (interleave--switch-to-pdf-buffer)
+       (funcall interleave-pdf-goto-page-fn pdf-page)))))
 
 (define-obsolete-function-alias
   'interleave--sync-pdf-page-next 'interleave-sync-pdf-page-next "1.3.0")
@@ -500,26 +501,27 @@ This show the previous notes and synchronizes the PDF to the right page number."
 
 This shows the next notes and synchronizes the PDF to the right page number."
   (interactive)
-  (interleave--switch-to-org-buffer)
-  (widen)
-  ;; go to the first notes heading if we're not at an headline or if
-  ;; we're on multi-pdf heading. This is useful to quickly jump to the
-  ;; notes if they start at page 96 or so. Image you need to skip page
-  ;; for page.
-  (if (interleave--goto-parent-headline interleave--page-note-prop)
-      (org-forward-heading-same-level 1)
-    (when interleave-multi-pdf-notes-file
-      (org-show-subtree))
-    (outline-next-visible-heading 1))
-  (interleave--narrow-to-subtree)
-  (org-show-subtree)
-  (org-cycle-hide-drawers t)
-  (when-let* ((interleave-page-number (org-entry-get (point) interleave--page-note-prop))
-              (pdf-page (string-to-number interleave-page-number)))
-    (when (and (integerp pdf-page)
-               (> pdf-page 0)) ; The page number needs to be a positive integer
-      (interleave--switch-to-pdf-buffer)
-      (funcall interleave-pdf-goto-page-fn pdf-page))))
+  (save-selected-window
+    (interleave--switch-to-org-buffer)
+    (widen)
+    ;; go to the first notes heading if we're not at an headline or if
+    ;; we're on multi-pdf heading. This is useful to quickly jump to the
+    ;; notes if they start at page 96 or so. Image you need to skip page
+    ;; for page.
+    (if (interleave--goto-parent-headline interleave--page-note-prop)
+        (org-forward-heading-same-level 1)
+      (when interleave-multi-pdf-notes-file
+        (org-show-subtree))
+      (outline-next-visible-heading 1))
+    (interleave--narrow-to-subtree)
+    (org-show-subtree)
+    (org-cycle-hide-drawers t)
+    (when-let* ((interleave-page-number (org-entry-get (point) interleave--page-note-prop))
+                (pdf-page (string-to-number interleave-page-number)))
+      (when (and (integerp pdf-page)
+                 (> pdf-page 0)) ; The page number needs to be a positive integer
+        (interleave--switch-to-pdf-buffer)
+        (funcall interleave-pdf-goto-page-fn pdf-page)))))
 
 ;;;###autoload
 (define-obsolete-function-alias
