@@ -323,7 +323,7 @@ It (possibly) narrows the subtree when found."
             ;; widen the buffer again for the case it is narrowed from
             ;; multi-pdf notes search. Kinda ugly I know. Maybe a macro helps?
             (widen)
-            (setq point (org-back-to-heading t))
+            (setq point (point))
             (interleave--narrow-to-subtree)
             (org-show-subtree)
             (org-cycle-hide-drawers t)
